@@ -10,17 +10,24 @@ use Illuminate\Http\Request;
 class BooksController extends Controller
 {
     public function __construct(public BookService $bookService)
-    {
-        # code...
-    }
+    {}
     public function store(BooksRequest $request)
     {
         $request->validated;
-        $this->bookService->create($request->all());
+        $book= $this->bookService->create($request->all());
+        return redirect($book->path());
+
     }
     public function update($id,BooksRequest $request)
     {
        $request->validated;
-       $this->bookService->update($request->all(), $id);
+       $book =$this->bookService->edit($request->all(), $id);
+       return redirect($book->path());
+
+    }
+    public function delete($id)
+    {
+        $this->bookService->delete($id);
+        return redirect('/books');
     }
 }

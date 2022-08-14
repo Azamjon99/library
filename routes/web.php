@@ -18,3 +18,4 @@ Route::get('/', function () {
     return view('welcome');
 });
 Route::post('/books', [BooksController::class, 'store']);
+Route::patch('/books/{id}', [BooksController::class, 'update']);

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthorsController;
 use App\Http\Controllers\BooksController;
+use App\Http\Controllers\CheckoutBookController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -24,3 +25,8 @@ Route::delete('/books/{id}', [BooksController::class, 'delete']);
 
 Route::post('/authors', [AuthorsController::class, 'store']);
 
+Route::post('/checkout/{book}',[CheckoutBookController::class, 'store'] )->middleware('auth');;
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

@@ -51,4 +51,44 @@ use RefreshDatabase;
             $this->actingAs($user)->post('/checkout/123' )->assertStatus(404);
             $this->assertCount(0, Reservation::all());
         }
+        /** @test */
+        public function a_book_can_be_checked_in_by_signed_user()
+        {
+            $this->withoutExceptionHandling();
+            $book = Book::factory()->create();
+            /** @var User */
+            $user =User::factory()->create();
+            $this->actingAs($user)->post('/checkout/' . $book->id);
+            $this->actingAs($user)->post('/checkin/' . $book->id);
+            $this->assertCount(1, Reservation::all());
+            $this->assertEquals($user->id, Reservation::first()->user_id);
+            $this->assertEquals($book->id, Reservation::first()->book_id);
+            $this->assertEquals(now(), Reservation::first()->check_in_at);
+            $this->assertEquals(now(), Reservation::first()->check_out_at);
+        }
+
+        /** @test */
+        public function only_signed_users_can_check_in()
+        {
+
+            $book = Book::factory()->create();
+            /** @var User */
+            $user =User::factory()->create();
+            $this->post('/checkout/' . $book->id)->assertRedirect('/login');
+            $this->post('/checkin/' . $book->id)->assertRedirect('/login');
+            $this->assertCount(0, Reservation::all());
+
+        }
+
+        /** @test */
+        public function a_404_is_thrown_if_a_book_is_not_checked()
+        {
+            $this->withoutExceptionHandling();
+            $book = Book::factory()->create();
+            /** @var User */
+            $user =User::factory()->create();
+            $this->actingAs($user)->post('/checkin/' . $book->id)->assertStatus(404);
+            $this->assertCount(0, Reservation::all());
+
+        }
     }
